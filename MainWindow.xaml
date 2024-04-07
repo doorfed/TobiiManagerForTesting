@@ -1,0 +1,99 @@
+﻿<Window x:Class="TobiiGlassesManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TobiiGlassesManager"
+        xmlns:viewModel="clr-namespace:TobiiGlassesManager.MVVM.ViewModels"
+        mc:Ignorable="d"
+        Height="600" 
+        Width="920"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        AllowsTransparency="True"
+        >
+    <Window.DataContext>
+        <viewModel:MainViewModel />
+    </Window.DataContext>
+    
+    <Border Background="DarkCyan"
+            CornerRadius="15">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Temp Logo Text"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Foreground="White"
+                       FontSize="22"
+                       FontWeight="Bold"/>
+
+            <TextBlock Grid.Column="1" 
+                       Text="Connected with:"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Foreground="White"
+                       FontSize="20"
+                       FontWeight="Bold"/>
+
+            <StackPanel Grid.Row="1">
+                <RadioButton Content="Home"
+                             Height="50"
+                             Foreground="White"
+                             FontSize="16"
+                             Style="{StaticResource MenuTheme}"
+                             IsChecked="True"
+                             Command="{Binding HomeViewCommand}"/>
+
+                <RadioButton Content="Connect to Glasses"
+                             Height="50"
+                             Foreground="White"
+                             FontSize="16"
+                             Style="{StaticResource MenuTheme}"
+                             Command="{Binding ConnectToGlassesViewCommand}"/>
+
+                <RadioButton Content="Start Recording"
+                             Height="50"
+                             Foreground="White"
+                             FontSize="16"
+                             Style="{StaticResource MenuTheme}"
+                             Command="{Binding HomeViewCommand}"/>
+
+                <RadioButton Content="Stop Recording"
+                             Height="50"
+                             Foreground="White"
+                             FontSize="16"
+                             Style="{StaticResource MenuTheme}"
+                             Command="{Binding HomeViewCommand}"/>
+
+                <RadioButton Content="Recordings"
+                             Height="50"
+                             Foreground="White"
+                             FontSize="16"
+                             Style="{StaticResource MenuTheme}"
+                             Command="{Binding HomeViewCommand}"/>
+
+            </StackPanel>
+
+            <TextBlock Text="ver 1.0"
+                       Grid.Row="1"
+                       Foreground="White"
+                       VerticalAlignment="Bottom"/>
+
+            <ContentControl Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="10" 
+                            Content="{Binding CurrentView}"/>
+        </Grid>
+    </Border>
+</Window>
