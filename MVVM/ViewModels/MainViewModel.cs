@@ -1,6 +1,8 @@
 ﻿using G3SDK;
 using System;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 using TobiiGlassesManager.Core;
 
 namespace TobiiGlassesManager.MVVM.ViewModels
@@ -8,14 +10,16 @@ namespace TobiiGlassesManager.MVVM.ViewModels
     internal class MainViewModel : ObservableObject
     {
         private Task _initialBrowseTask;
-        private readonly G3Browser _browser;
+        private G3Browser _browser;
+
+        public RelayCommand CloseAppCommand { get; set; }
 
         public HomeViewModel HomeViewModel { get; set; }
         public RelayCommand HomeViewCommand { get; set; }
 
         public ConnectToGlassesViewModel ConnectToGlassesViewModel { get; set; }
         public RelayCommand ConnectToGlassesViewCommand { get; set; }
-        public RelayCommand BrowseForGlassesCommand { get; }
+        public RelayCommand BrowseForGlassesCommand { get; set; }
 
         private object _currentView;
 
@@ -31,10 +35,25 @@ namespace TobiiGlassesManager.MVVM.ViewModels
 
         public MainViewModel()
         {
+            InitViewModel();
+        }
+
+        public MainViewModel(Dispatcher dispatcher) : base(dispatcher)
+        {
+            InitViewModel();
+        }
+
+        private void InitViewModel()
+        {
             InitViewModels();
             CurrentView = HomeViewModel;
 
             _browser = new G3Browser();
+
+            CloseAppCommand = new RelayCommand(o =>
+            {
+                Application.Current.Shutdown();
+            });
 
             HomeViewCommand = new RelayCommand(o =>
             {
@@ -57,8 +76,8 @@ namespace TobiiGlassesManager.MVVM.ViewModels
 
         private void InitViewModels()
         {
-            HomeViewModel = new HomeViewModel();
-            ConnectToGlassesViewModel = new ConnectToGlassesViewModel();
+            HomeViewModel = new HomeViewModel(Dispatcher);
+            ConnectToGlassesViewModel = new ConnectToGlassesViewModel(Dispatcher);
         }
 
         private async Task BrowseForGlasses()
@@ -73,7 +92,7 @@ namespace TobiiGlassesManager.MVVM.ViewModels
                 if (!ConnectToGlassesViewModel.DeviceIds.Contains(d.Id))
                 {
                     ConnectToGlassesViewModel.DeviceIds.Add(d.Id);
-                    ConnectToGlassesViewModel.Devices.Add(String.Join("-", d.Id, d.DisplayName, d.Services));
+                    ConnectToGlassesViewModel.Devices.Add(new DeviceViewModel(d.Id, new G3Api(d.IPAddress), Dispatcher));
                 }
             }
 

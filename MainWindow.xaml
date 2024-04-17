@@ -14,6 +14,7 @@
         Background="Transparent"
         AllowsTransparency="True"
         >
+    
     <Window.DataContext>
         <viewModel:MainViewModel />
     </Window.DataContext>
@@ -30,6 +31,15 @@
                 <RowDefinition Height="100"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
+
+            <Button Grid.Column="1"
+                    Grid.Row="0"
+                    Padding="10"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Command="{Binding CloseAppCommand}">
+                X
+            </Button>
 
             <TextBlock Text="Temp Logo Text"
                        VerticalAlignment="Center"

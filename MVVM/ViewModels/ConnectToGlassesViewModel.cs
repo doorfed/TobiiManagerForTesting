@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Threading;
 using TobiiGlassesManager.Core;
 
 namespace TobiiGlassesManager.MVVM.ViewModels
@@ -12,8 +13,8 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             get { return _deviceIds; } 
         }
 
-        private ObservableCollection<string> _devices;
-        public ObservableCollection<string> Devices
+        private ObservableCollection<DeviceViewModel> _devices;
+        public ObservableCollection<DeviceViewModel> Devices
         {
             get { return _devices; }
             set 
@@ -22,12 +23,12 @@ namespace TobiiGlassesManager.MVVM.ViewModels
                 _deviceIds.Clear();
                 foreach (var device in _devices)
                 {
-                    _deviceIds.Add(device.Split('-')[0]);
+                    _deviceIds.Add(device.Id);
                 }
             }
         }
 
-        public ConnectToGlassesViewModel() 
+        public ConnectToGlassesViewModel(Dispatcher dispatcher) : base(dispatcher)
         {
             _deviceIds = new HashSet<string>();
         }

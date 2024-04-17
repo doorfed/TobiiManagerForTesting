@@ -1,10 +1,11 @@
-﻿using TobiiGlassesManager.Core;
+﻿using System.Windows.Threading;
+using TobiiGlassesManager.Core;
 
 namespace TobiiGlassesManager.MVVM.ViewModels
 {
     internal class HomeViewModel : ObservableObject
     {
-        public HomeViewModel() 
+        public HomeViewModel(Dispatcher dispatcher) : base(dispatcher)
         {
 
         }
