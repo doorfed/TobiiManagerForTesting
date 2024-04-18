@@ -22,6 +22,10 @@ namespace TobiiGlassesManager.Core
     internal class DeviceViewModel : ObservableObject
     {
         private readonly string _hostName;
+        public string HostName
+        {
+            get { return _hostName; }
+        }
         private readonly IG3Api _g3;
         private readonly Timer _calibMarkerTimer;
         private readonly Timer _externalTimeReferenceTimer;

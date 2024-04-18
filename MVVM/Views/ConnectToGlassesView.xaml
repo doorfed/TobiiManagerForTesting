@@ -16,10 +16,10 @@
                    HorizontalAlignment="Left"
                    Margin="0, 0, 0, 20"/>
 
-        <ListBox ItemsSource="{Binding}">
+        <ListBox ItemsSource="{Binding Devices}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding }" />
+                    <TextBlock Text="{Binding HostName}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
