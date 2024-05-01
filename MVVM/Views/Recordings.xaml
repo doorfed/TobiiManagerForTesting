@@ -13,7 +13,10 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <ListBox ItemsSource="{Binding Recordings}" SelectedItem="{Binding SelectedRecording}">
+        <ListBox ItemsSource="{Binding Recordings}" 
+                 SelectedItem="{Binding SelectedRecording}" 
+                 Width="200"
+                 HorizontalAlignment="Left">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="1">
@@ -34,7 +37,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <local:Replay Grid.Column="1"  DataContext="{Binding SelectedRecording}"></local:Replay>
+        <local:Replay  DataContext="{Binding SelectedRecording}" Grid.ColumnSpan="2" Margin="200,0,0,0"/>
 
     </Grid>
 </UserControl>
