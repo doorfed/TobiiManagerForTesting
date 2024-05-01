@@ -40,6 +40,7 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             set { _currentDevice = value; }
         }
 
+        public RelayCommand SearchForGlassesCommand { get; set; }
         public RelayCommand ConnectToDeviceCommand { get; set; }
 
         public ConnectToGlassesViewModel(Dispatcher dispatcher) : base(dispatcher)
@@ -53,10 +54,13 @@ namespace TobiiGlassesManager.MVVM.ViewModels
                 _currentDevice = (DeviceViewModel)o;
             });
 
+            SearchForGlassesCommand = new RelayCommand(async o =>
+            {
+                await BrowseForGlasses();
+            });
+
             _initialBrowseTask = BrowseForGlasses();
         }
-
-
 
         private async Task BrowseForGlasses()
         {
