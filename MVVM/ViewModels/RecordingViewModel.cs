@@ -26,6 +26,7 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             await vm.Init();
             return vm;
         }
+
         private readonly IRecording _recording;
         private TimeSpan _duration;
         private string _visibleName;

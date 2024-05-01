@@ -1,15 +1,15 @@
-﻿using System;
+﻿using G3SDK;
+using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using G3MetricsDataCollection;
 using Unosquare.FFME;
 using Unosquare.FFME.Common;
 
-namespace G3SDK.WPF
+namespace TobiiGlassesManager.Core.VideoStreaming
 {
     public class RtspPlayerVM : INotifyPropertyChanged
     {

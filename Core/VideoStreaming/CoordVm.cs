@@ -1,4 +1,4 @@
-﻿namespace G3MetricsDataCollection
+﻿namespace TobiiGlassesManager.Core.VideoStreaming
 {
     public class CoordVm
     {

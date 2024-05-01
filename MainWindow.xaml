@@ -12,13 +12,13 @@
         WindowStyle="None"
         ResizeMode="NoResize"
         Background="Transparent"
+        d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel, IsDesignTimeCreatable=false}"
         AllowsTransparency="True"
         >
-    
     <Window.DataContext>
         <viewModel:MainViewModel />
     </Window.DataContext>
-    
+
     <Border Background="DarkCyan"
             CornerRadius="15">
         <Grid>
@@ -31,15 +31,6 @@
                 <RowDefinition Height="100"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
-
-            <Button Grid.Column="1"
-                    Grid.Row="0"
-                    Padding="10"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Command="{Binding CloseAppCommand}">
-                X
-            </Button>
 
             <TextBlock Text="Temp Logo Text"
                        VerticalAlignment="Center"
@@ -72,26 +63,19 @@
                              Style="{StaticResource MenuTheme}"
                              Command="{Binding ConnectToGlassesViewCommand}"/>
 
-                <RadioButton Content="Start Recording"
-                             Height="50"
-                             Foreground="White"
-                             FontSize="16"
-                             Style="{StaticResource MenuTheme}"
-                             Command="{Binding HomeViewCommand}"/>
-
-                <RadioButton Content="Stop Recording"
-                             Height="50"
-                             Foreground="White"
-                             FontSize="16"
-                             Style="{StaticResource MenuTheme}"
-                             Command="{Binding HomeViewCommand}"/>
-
                 <RadioButton Content="Recordings"
                              Height="50"
                              Foreground="White"
                              FontSize="16"
                              Style="{StaticResource MenuTheme}"
                              Command="{Binding HomeViewCommand}"/>
+
+                <RadioButton Content="Exit"
+                             Height="50"
+                             Foreground="White"
+                             FontSize="16"
+                             Style="{StaticResource MenuTheme}"
+                             Command="{Binding CloseAppCommand}"/>
 
             </StackPanel>
 

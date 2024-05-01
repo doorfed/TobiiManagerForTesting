@@ -1,4 +1,4 @@
-﻿namespace G3SDK.WPF
+﻿namespace TobiiGlassesManager.Core.VideoStreaming
 {
     public enum VideoStream
     {

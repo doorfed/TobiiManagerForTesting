@@ -1,10 +1,10 @@
-﻿using System.Windows;
+﻿using System.Windows.Controls;
 
 namespace TobiiGlassesManager.MVVM.Views
 {
-    public partial class CalibMarker : Window
+    public partial class Recordings : UserControl
     {
-        public CalibMarker()
+        public Recordings()
         {
             InitializeComponent();
         }

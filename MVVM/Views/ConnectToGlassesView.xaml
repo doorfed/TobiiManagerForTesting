@@ -10,18 +10,30 @@
              d:DesignHeight="450" 
              d:DesignWidth="800">
     <StackPanel>
-        <TextBlock Text="Connecteer met de Tobii Glasses"
+        <TextBlock Text="Connect to Tobii Glasses"
                    Foreground="White"
                    FontSize="30"
                    HorizontalAlignment="Left"
                    Margin="0, 0, 0, 20"/>
 
-        <ListBox ItemsSource="{Binding Devices}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding HostName}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <ListView ItemsSource="{Binding Devices}">
+            <ListView.View>
+                <GridView AllowsColumnReorder="true">
+
+                    <GridViewColumn DisplayMemberBinding="{Binding HostName}" Width="400">
+                        <GridViewColumnHeader Content="Name" />
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Connect" Width="400" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding ConnectToDeviceCommand}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+
+            </ListView.View>
+        </ListView>
     </StackPanel>
 </UserControl>

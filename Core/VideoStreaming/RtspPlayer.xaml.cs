@@ -3,7 +3,7 @@ using System.Windows;
 using FFmpeg.AutoGen;
 using Unosquare.FFME.Common;
 
-namespace G3SDK.WPF
+namespace TobiiGlassesManager.Core.VideoStreaming
 {
     /// <summary>
     /// Interaction logic for RtspPlayer.xaml

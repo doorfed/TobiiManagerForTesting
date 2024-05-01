@@ -1,5 +1,4 @@
 ﻿using G3SDK;
-using G3SDK.WPF;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -14,10 +13,11 @@ using OpenCvSharp;
 using OxyPlot;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Timer = System.Timers.Timer;
+using TobiiGlassesManager.Core;
 using TobiiGlassesManager.MVVM.Views;
-using TobiiGlassesManager.MVVM.ViewModels;
+using TobiiGlassesManager.Core.VideoStreaming;
 
-namespace TobiiGlassesManager.Core
+namespace TobiiGlassesManager.MVVM.ViewModels
 {
     internal class DeviceViewModel : ObservableObject
     {
@@ -46,7 +46,6 @@ namespace TobiiGlassesManager.Core
         private string _sync;
         private string _event;
         private bool _showCalibMarkers;
-        private CalibMarker _win;
 
         private bool _selected;
         private bool _isCalibrated;
@@ -56,7 +55,7 @@ namespace TobiiGlassesManager.Core
         private readonly RtspPlayerVM _rtspPlayerVM;
         private string _gazeBuffer;
 
-        public DeviceViewModel(string hostName, IG3Api g3, Dispatcher dispatcher) : base(dispatcher)
+        public DeviceViewModel(Dispatcher dispatcher, string hostName, IG3Api g3) : base(dispatcher)
         {
             _hostName = hostName;
             _g3 = g3;
@@ -66,22 +65,7 @@ namespace TobiiGlassesManager.Core
                 await _rtspPlayerVM.Connect(VideoStream.Scene);
             };
 
-            ShowCalibrationMarkerWindow = new RelayCommand(o => DoShowCalibrationMarkerWindow());
-            StartRecording = new RelayCommand(async o => await DoStartRecording());
-            StopRecording = new RelayCommand(async o => await DoStopRecording());
-            TakeSnapshot = new RelayCommand(async o => await DoTakeSnapshot());
             ScanQRCode = new RelayCommand(o => DoScanQRCode(o));
-            ToggleZoom = new RelayCommand(async o => await DoToggleZoom());
-            CalibrateMagStart = new RelayCommand(o => _calibMag.StartCalibration());
-            CalibrateMagStop = new RelayCommand(o => _calibMag.StartCalibration());
-
-            _calibMarkerTimer = new Timer(2000);
-            _calibMarkerTimer.Elapsed += async (sender, args) =>
-            {
-                if (_showCalibMarkers)
-                    await _g3.Calibrate.EmitMarkers();
-            };
-            _calibMarkerTimer.Enabled = true;
 
             _externalTimeReferenceTimer = new Timer(5000);
             _externalTimeReferenceTimer.Elapsed += async (sender, args) =>
@@ -443,31 +427,8 @@ namespace TobiiGlassesManager.Core
 
         public ICommand CalibrateMagStop { get; }
         public ICommand CalibrateMagStart { get; }
-        private bool CanStartRec()
-        {
-            return !IsRecording && CardState == CardState.Available &&
-                   (SpaceState == SpaceState.Low || SpaceState == SpaceState.Good);
-        }
-        private void DoShowCalibrationMarkerWindow()
-        {
-            if (_win == null)
-            {
-                var vm = new CalibrationViewModel(_g3, Dispatcher);
-                _win = new CalibMarker { DataContext = vm };
-                _win.Closed += (sender, args) => _win = null;
-                vm.OnCalibrationResult += (sender, res) => IsCalibrated = res;
-            }
-            _win.Show();
-        }
-        #endregion
 
-        public void CloseView()
-        {
-            if (_win != null)
-            {
-                _win.Close();
-            }
-        }
+        #endregion
 
         private string FormatV3(Vector3 v)
         {
