@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              d:DataContext="{d:DesignInstance Type=viewmodels:RecordingViewModel, IsDesignTimeCreatable=false}"
              xmlns:local="clr-namespace:TobiiGlassesManager.MVVM.Views"
-             xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win" xmlns:viewmodels="clr-namespace:TobiiGlassesManager.MVVM.ViewModels"
+             xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win" 
+             xmlns:viewmodels="clr-namespace:TobiiGlassesManager.MVVM.ViewModels"
              mc:Ignorable="d" 
              DataContextChanged="Replay_OnDataContextChanged"
              d:DesignHeight="450" d:DesignWidth="800">

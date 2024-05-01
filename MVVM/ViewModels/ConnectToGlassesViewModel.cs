@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using TobiiGlassesManager.Core;
+using TobiiGlassesManager.MVVM.Views;
 
 namespace TobiiGlassesManager.MVVM.ViewModels
 {
@@ -37,7 +38,22 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         public DeviceViewModel CurrentDevice
         {
             get { return _currentDevice; }
-            set { _currentDevice = value; }
+            set { 
+                _currentDevice = value;
+                Recordings = value.CreateRecordingsVM();
+            }
+        }
+
+        private RecordingsViewModel _recordings;
+        public RecordingsViewModel Recordings
+        {
+            get => _recordings;
+            private set
+            {
+                if (Equals(value, _recordings)) return;
+                _recordings = value;
+                OnPropertyChanged();
+            }
         }
 
         public RelayCommand SearchForGlassesCommand { get; set; }

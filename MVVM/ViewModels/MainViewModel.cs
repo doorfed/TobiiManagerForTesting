@@ -17,6 +17,9 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         public RelayCommand ConnectToGlassesViewCommand { get; set; }
         public RelayCommand DevicesViewCommand { get; set; }
 
+        public RecordingsViewModel RecordingsViewModel { get; set; }
+        public RelayCommand RecordingsViewCommand { get; set; }
+
         private object _currentView;
 
         public object CurrentView
@@ -57,6 +60,11 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             ConnectToGlassesViewCommand = new RelayCommand(o =>
             {
                 CurrentView = ConnectToGlassesViewModel;
+            });
+
+            RecordingsViewCommand = new RelayCommand(o =>
+            {
+                CurrentView = ConnectToGlassesViewModel.Recordings;
             });
         }
 
