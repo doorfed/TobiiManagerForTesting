@@ -1,46 +1,36 @@
 ﻿using G3SDK;
-using System.Collections.Generic;
+using Tobii.Research;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using TobiiGlassesManager.Core;
-using TobiiGlassesManager.MVVM.Views;
+using System;
 
 namespace TobiiGlassesManager.MVVM.ViewModels
 {
     internal class ConnectToGlassesViewModel : ObservableObject
     {
         private G3Browser _browser;
-        private Task _initialBrowseTask;
 
-        private readonly HashSet<string> _deviceIds;
-        public HashSet<string> DeviceIds
-        {
-            get { return _deviceIds; } 
-        }
-
-        private ObservableCollection<DeviceViewModel> _devices;
-        public ObservableCollection<DeviceViewModel> Devices
+        private ObservableCollection<IEyeTracker> _devices;
+        public ObservableCollection<IEyeTracker> Devices
         {
             get { return _devices; }
-            set 
-            { 
-                _devices = value;
-                _deviceIds.Clear();
-                foreach (var device in _devices)
-                {
-                    _deviceIds.Add(device.Id);
-                }
-            }
         }
 
-        private DeviceViewModel _currentDevice;
-        public DeviceViewModel CurrentDevice
+        private IEyeTracker _currentDevice;
+        public IEyeTracker CurrentDevice
         {
             get { return _currentDevice; }
-            set { 
+            set
+            {
+                if ( _currentDevice != null)
+                {
+                    _currentDevice.GazeDataReceived -= EyeTracker_GazeDataReceived;
+                }
+
                 _currentDevice = value;
-                Recordings = value.CreateRecordingsVM();
+                _currentDevice.GazeDataReceived += EyeTracker_GazeDataReceived;
             }
         }
 
@@ -62,40 +52,49 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         public ConnectToGlassesViewModel(Dispatcher dispatcher) : base(dispatcher)
         {
             _browser = new G3Browser();
-
-            _deviceIds = new HashSet<string>();
+            _devices = new ObservableCollection<IEyeTracker>();
+            _currentDevice = null;
 
             ConnectToDeviceCommand = new RelayCommand(o =>
             {
-                _currentDevice = (DeviceViewModel)o;
+                _currentDevice = (IEyeTracker)o;
             });
 
             SearchForGlassesCommand = new RelayCommand(async o =>
             {
                 await BrowseForGlasses();
             });
-
-            _initialBrowseTask = BrowseForGlasses();
         }
 
-        private async Task BrowseForGlasses()
+        private Task BrowseForGlasses()
         {
-            if (_initialBrowseTask != null && !_initialBrowseTask.IsCompleted)
-                return;
+            EyeTrackerCollection devices = EyeTrackingOperations.FindAllEyeTrackers();
 
-            var devices = await _browser.ScanZeroConf();
+            _devices.Clear();
 
             foreach (var d in devices)
             {
-                if (!DeviceIds.Contains(d.Id))
-                {
-                    DeviceIds.Add(d.Id);
-                    Devices.Clear();
-                    Devices.Add(new DeviceViewModel(Dispatcher, d.Id, new G3Api(d.IPAddress)));
-                }
+                _devices.Add(d);
             }
 
-            _initialBrowseTask = null;
+            return Task.CompletedTask;
+        }
+
+        private static void EyeTracker_GazeDataReceived(object sender, GazeDataEventArgs e)
+        {
+            Console.WriteLine(
+                "Got gaze data with {0} left eye gaze point at point ({1}, {2}, {3}) in the user coordinate system.",
+                e.LeftEye.GazePoint.Validity,
+                e.LeftEye.GazePoint.PositionInUserCoordinates.X,
+                e.LeftEye.GazePoint.PositionInUserCoordinates.Y,
+                e.LeftEye.GazePoint.PositionInUserCoordinates.Z);
+            
+            Console.WriteLine(
+                "Got gaze data with {0} right eye gaze point at point ({1}, {2}, {3}) in the user coordinate system.",
+                e.RightEye.GazePoint.Validity,
+                e.RightEye.GazePoint.PositionInUserCoordinates.X,
+                e.RightEye.GazePoint.PositionInUserCoordinates.Y,
+                e.RightEye.GazePoint.PositionInUserCoordinates.Z);
         }
     }
 }

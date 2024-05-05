@@ -22,9 +22,13 @@
                 <view:DeviceDetailView />
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type viewModel:RecordingViewModel}"/>
+            <DataTemplate DataType="{x:Type viewModel:RecordingsViewModel}">
+                <view:Recordings />
+            </DataTemplate>
 
-            <DataTemplate DataType="{x:Type viewModel:RecordingsViewModel}"/>
+            <DataTemplate DataType="{x:Type viewModel:RecordingViewModel}">
+                <view:Replay />
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

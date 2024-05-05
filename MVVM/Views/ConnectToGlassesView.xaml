@@ -27,9 +27,8 @@
 
         <ListView ItemsSource="{Binding Devices}">
             <ListView.View>
-                <GridView AllowsColumnReorder="true">
-
-                    <GridViewColumn DisplayMemberBinding="{Binding HostName}" Width="400">
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding DeviceName}" Width="400">
                         <GridViewColumnHeader Content="Name" />
                     </GridViewColumn>
 
@@ -41,7 +40,6 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                 </GridView>
-
             </ListView.View>
         </ListView>
     </StackPanel>

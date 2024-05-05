@@ -68,7 +68,7 @@
                              Foreground="White"
                              FontSize="16"
                              Style="{StaticResource MenuTheme}"
-                             Command="{Binding HomeViewCommand}"/>
+                             Command="{Binding RecordingsViewCommand}"/>
 
                 <RadioButton Content="Exit"
                              Height="50"
