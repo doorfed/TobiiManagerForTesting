@@ -12,25 +12,20 @@ namespace TobiiGlassesManager.MVVM.ViewModels
     {
         private G3Browser _browser;
 
-        private ObservableCollection<IEyeTracker> _devices;
-        public ObservableCollection<IEyeTracker> Devices
+        private ObservableCollection<DeviceViewModel> _devices;
+        public ObservableCollection<DeviceViewModel> Devices
         {
             get { return _devices; }
         }
 
-        private IEyeTracker _currentDevice;
-        public IEyeTracker CurrentDevice
+        private DeviceViewModel _currentDevice;
+        public DeviceViewModel CurrentDevice
         {
             get { return _currentDevice; }
             set
             {
-                if ( _currentDevice != null)
-                {
-                    _currentDevice.GazeDataReceived -= EyeTracker_GazeDataReceived;
-                }
-
                 _currentDevice = value;
-                _currentDevice.GazeDataReceived += EyeTracker_GazeDataReceived;
+                _recordings = _currentDevice.CreateRecordingsVM();
             }
         }
 
@@ -52,12 +47,12 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         public ConnectToGlassesViewModel(Dispatcher dispatcher) : base(dispatcher)
         {
             _browser = new G3Browser();
-            _devices = new ObservableCollection<IEyeTracker>();
+            _devices = new ObservableCollection<DeviceViewModel>();
             _currentDevice = null;
 
             ConnectToDeviceCommand = new RelayCommand(o =>
             {
-                _currentDevice = (IEyeTracker)o;
+                _currentDevice = (DeviceViewModel)o;
             });
 
             SearchForGlassesCommand = new RelayCommand(async o =>
@@ -66,35 +61,16 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             });
         }
 
-        private Task BrowseForGlasses()
+        private async Task BrowseForGlasses()
         {
-            EyeTrackerCollection devices = EyeTrackingOperations.FindAllEyeTrackers();
+            var devices = await _browser.ScanZeroConf();
 
             _devices.Clear();
 
             foreach (var d in devices)
             {
-                _devices.Add(d);
+                _devices.Add(new DeviceViewModel(Dispatcher, d.DisplayName, new G3Api(d.IPAddress)));
             }
-
-            return Task.CompletedTask;
-        }
-
-        private static void EyeTracker_GazeDataReceived(object sender, GazeDataEventArgs e)
-        {
-            Console.WriteLine(
-                "Got gaze data with {0} left eye gaze point at point ({1}, {2}, {3}) in the user coordinate system.",
-                e.LeftEye.GazePoint.Validity,
-                e.LeftEye.GazePoint.PositionInUserCoordinates.X,
-                e.LeftEye.GazePoint.PositionInUserCoordinates.Y,
-                e.LeftEye.GazePoint.PositionInUserCoordinates.Z);
-            
-            Console.WriteLine(
-                "Got gaze data with {0} right eye gaze point at point ({1}, {2}, {3}) in the user coordinate system.",
-                e.RightEye.GazePoint.Validity,
-                e.RightEye.GazePoint.PositionInUserCoordinates.X,
-                e.RightEye.GazePoint.PositionInUserCoordinates.Y,
-                e.RightEye.GazePoint.PositionInUserCoordinates.Z);
         }
     }
 }
