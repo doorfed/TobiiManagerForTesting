@@ -8,8 +8,9 @@
              xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win" 
              xmlns:viewmodels="clr-namespace:TobiiGlassesManager.MVVM.ViewModels"
              mc:Ignorable="d" 
-             DataContextChanged="Replay_OnDataContextChanged"
-             d:DesignHeight="500" d:DesignWidth="720">
+             DataContextChanged="Replay_OnDataContextChanged" 
+             d:DesignWidth="800" 
+             Height="775">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -44,15 +45,19 @@
                 IsMoveToPointEnabled = "True" >
         </Slider>
         <StackPanel Grid.Row="3">
-        <StackPanel  Orientation="Horizontal">
-            <Button Command="{Binding TogglePlay}">Play/Pause</Button>
-            <Button Command="{Binding StartRTA}">StartRTA</Button>
-            <Button Command="{Binding StopRTA}">StopRTA</Button>
-            <Button Command="{Binding Download}">Download</Button>
-        </StackPanel>
+            <StackPanel  Orientation="Horizontal">
+                <Button Command="{Binding TogglePlay}">Play/Pause</Button>
+                <Button Command="{Binding StartRTA}">StartRTA</Button>
+                <Button Command="{Binding StopRTA}">StopRTA</Button>
+                <Button Command="{Binding Download}">Download</Button>
+            </StackPanel>
             <ProgressBar Value="{Binding DownloadProgress}" Maximum="1" Minimum="0"></ProgressBar>
         </StackPanel>
-        <ffme:MediaElement Grid.Row="4"  x:Name="RtaVideo"  Background="Gray" LoadedBehavior="Manual" UnloadedBehavior="Manual" />
+        <ffme:MediaElement Grid.Row="4"  
+                           x:Name="RtaVideo"  
+                           Background="Gray" 
+                           LoadedBehavior="Manual" 
+                           UnloadedBehavior="Manual" />
         <ItemsControl Grid.Row="5" ItemsSource="{Binding Snapshots}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -62,11 +67,11 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="1">
-                    <StackPanel>
-                        <TextBlock Text="{Binding FileName}"></TextBlock>
+                        <StackPanel>
+                            <TextBlock Text="{Binding FileName}"></TextBlock>
                             <TextBlock Text="{Binding Time, StringFormat=hh\\:mm\\:ss\\.fff}"></TextBlock>
-                        <Image Width="100" Height="50" Source="{Binding Url}" />
-                    </StackPanel>
+                            <Image Width="100" Height="50" Source="{Binding Url}" />
+                        </StackPanel>
                     </Border>
                 </DataTemplate>
 

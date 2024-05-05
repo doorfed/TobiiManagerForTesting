@@ -15,8 +15,8 @@
         </Grid.ColumnDefinitions>
         <ListBox ItemsSource="{Binding Recordings}" 
                  SelectedItem="{Binding SelectedRecording}" 
-                 Width="200"
-                 HorizontalAlignment="Left">
+                 Width="400"
+                 SelectionChanged="ListBox_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="1">
@@ -28,16 +28,14 @@
                                 <TextBlock Text="{Binding VisibleName, StringFormat=Name: {0}}"></TextBlock>
                                 <TextBlock Text="{Binding FwVersion, StringFormat=FW: {0}}"></TextBlock>
                                 <TextBlock Text="{Binding RuSerial, StringFormat=SN: {0}}"></TextBlock>
-                                <Button Command="{Binding DeleteRecording}">
-                                    <Image Width="20" Height="20"  Source="images/recycle-bin.png" ></Image>
-                                </Button>
+                                <Button Content="Delete" Command="{Binding DeleteRecording}" />
                             </StackPanel>
                         </StackPanel>
                     </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <local:Replay  DataContext="{Binding SelectedRecording}" Grid.ColumnSpan="2" Margin="200,0,0,0"/>
+        <local:Replay  DataContext="{Binding SelectedRecording}" Grid.Column="1"/>
 
     </Grid>
 </UserControl>
