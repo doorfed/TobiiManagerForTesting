@@ -3,7 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using G3SDK;
@@ -11,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TobiiGlassesManager.Core;
 using Unosquare.FFME;
+using Unosquare.FFME.Common;
 using Timer = System.Timers.Timer;
 
 namespace TobiiGlassesManager.MVVM.ViewModels
@@ -30,7 +33,7 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         private DateTime _created;
         private readonly List<G3GazeData> _gaze = new List<G3GazeData>();
         private ConcurrentQueue<G3GazeData> _gazeQueue;
-        private MediaElement _media;
+        private System.Windows.Controls.MediaElement _media;
         private TimeSpan _position;
         private double _gazeLoadedUntil;
         private Timer _gazeLoadTimer;
@@ -46,7 +49,7 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         private string _huSerial;
         private string _ruSerial;
         private string _fwVersion;
-        private MediaElement _rtaMedia;
+        private Unosquare.FFME.MediaElement _rtaMedia;
         private List<(TimeSpan, RtaInfo)> _rtaEvents;
         private IRecording _rtaRec;
         private bool _isPlaying;
@@ -58,10 +61,11 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             _g3 = g3;
             TogglePlay = new RelayCommand(async o => await DoTogglePlay());
 
-            DeleteRecording = new RelayCommand(o => DoDeleteRecording());
+            DeleteRecording = new RelayCommand(async o => await DoDeleteRecording());
             Download = new RelayCommand(async o => await DoDownload());
             StartRTA = new RelayCommand(async o => await DoStartRTA());
             StopRTA = new RelayCommand(async o => await DoStopRTA());
+
             _g3.Recorder.Started.SubscribeAsync(g => DeviceIsRecording = true);
             _g3.Recorder.Stopped.SubscribeAsync(g => DeviceIsRecording = false);
         }
@@ -140,10 +144,11 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             }
         }
 
-        public async Task AttachMediaPlayer(MediaElement media, MediaElement rtaMedia)
+        public async Task AttachMediaPlayer(System.Windows.Controls.MediaElement media, Unosquare.FFME.MediaElement rtaMedia)
         {
             _media = media;
 
+            /**
             _media.RenderingVideo += (sender, args) =>
             {
                 InternalSetPosition(args.StartTime);
@@ -152,6 +157,7 @@ namespace TobiiGlassesManager.MVVM.ViewModels
                     UpdateRTAVideo(args.StartTime);
             };
             await _media.Open(VideoUri);
+            **/
             await PrepareReplay();
 
             if (_rtaRec != null)
@@ -175,9 +181,9 @@ namespace TobiiGlassesManager.MVVM.ViewModels
                 var expectedPos = e.Item2.Position + offset;
                 if (Math.Abs((_rtaMedia.Position - expectedPos).TotalSeconds) > 0.2)
                     _rtaMedia.Position = expectedPos;
-                if (_media.IsPlaying && !_rtaMedia.IsPlaying)
+                if (GetMediaState(_media).Equals(MediaState.Play) && !_rtaMedia.IsPlaying)
                     _rtaMedia.Play();
-                if (!_media.IsPlaying)
+                if (!GetMediaState(_media).Equals(MediaState.Play))
                     _rtaMedia.Pause();
             }
             else
@@ -185,6 +191,15 @@ namespace TobiiGlassesManager.MVVM.ViewModels
                 _rtaMedia.Position = e.Item2.Position;
                 _rtaMedia.Pause();
             }
+        }
+
+        private MediaState GetMediaState(System.Windows.Controls.MediaElement myMedia)
+        {
+            FieldInfo hlp = typeof(System.Windows.Controls.MediaElement).GetField("_helper", BindingFlags.NonPublic | BindingFlags.Instance);
+            object helperObject = hlp.GetValue(myMedia);
+            FieldInfo stateField = helperObject.GetType().GetField("_currentState", BindingFlags.NonPublic | BindingFlags.Instance);
+            MediaState state = (MediaState)stateField.GetValue(helperObject);
+            return state;
         }
 
         private void RenderGazeData(TimeSpan timeStamp)
@@ -219,14 +234,14 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             if (_gaze == null)
                 await PrepareReplay();
 
-            if (_media.IsPlaying)
+            if (GetMediaState(_media).Equals(MediaState.Play))
             {
-                await _media.Pause();
+                _media.Pause();
                 _isPlaying = false;
             }
             else
             {
-                await _media.Play();
+                _media.Play();
                 _isPlaying = true;
 
             }
@@ -244,7 +259,7 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             HuSerial = await _recording.MetaLookupString(MetaDataCapableHelpers.MetaDataKey_HuSerial);
             VideoUri = await _recording.GetUri("scenevideo.mp4");
             var rtaInfoStr = await _recording.MetaLookupString("RTA");
-            if (!string.IsNullOrEmpty(rtaInfoStr))
+            if (!String.IsNullOrEmpty(rtaInfoStr))
             {
                 await InitRTAReplay(rtaInfoStr);
             }
@@ -400,7 +415,7 @@ namespace TobiiGlassesManager.MVVM.ViewModels
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(PositionInSeconds));
                 _media.Position = value;
-                SendRtaInfo();
+                _ = SendRtaInfo();
             }
         }
 

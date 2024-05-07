@@ -35,7 +35,6 @@ namespace TobiiGlassesManager.Core.VideoStreaming
             _g3Api = g3Api;
             _rtspDataDemuxer = new RtspDataDemuxer(_g3Api);
             _bufferingTimer = new Timer(UpdateBufferingProgress);
-            Library.FFmpegDirectory = ".";
         }
 
         private void UpdateBufferingProgress(object state)

@@ -10,7 +10,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>TobiiGlassesManager</RootNamespace>
     <AssemblyName>TobiiGlassesManager</AssemblyName>
-    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -77,9 +77,8 @@
     <Reference Include="ffme.win, Version=4.4.350.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\FFME.Windows.4.4.350\lib\net48\ffme.win.dll</HintPath>
     </Reference>
-    <Reference Include="FFmpeg.AutoGen, Version=4.4.0.0, Culture=neutral, PublicKeyToken=9b7632533a381715, processorArchitecture=MSIL">
-      <HintPath>packages\FFmpeg.AutoGen.7.0.0\lib\netstandard2.0\FFmpeg.AutoGen.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="FFmpeg.AutoGen, Version=6.0.0.2, Culture=neutral, PublicKeyToken=9b7632533a381715, processorArchitecture=MSIL">
+      <HintPath>packages\FFmpeg.AutoGen.6.0.0.2\lib\netstandard2.0\FFmpeg.AutoGen.dll</HintPath>
     </Reference>
     <Reference Include="G3SDK, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Tobii.Glasses3.SDK.1.2.0\lib\net472\G3SDK.dll</HintPath>
@@ -215,9 +214,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Tobii.Research, Version=1.8.0.1108, Culture=neutral, PublicKeyToken=70326046dcdce6cb, processorArchitecture=MSIL">
-      <HintPath>packages\Tobii.Research.x86.1.8.0.1108\lib\net452\Tobii.Research.dll</HintPath>
-    </Reference>
     <Reference Include="WebSocketSharper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WebSocketSharper.1.0.42\lib\netstandard2.0\WebSocketSharper.dll</HintPath>
     </Reference>
@@ -225,7 +221,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="Zeroconf, Version=3.6.0.0, Culture=neutral, PublicKeyToken=dbbfcdb374507df0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Zeroconf.3.6.11\lib\netstandard2.0\Zeroconf.dll</HintPath>
+      <HintPath>packages\Zeroconf.3.6.11\lib\net48\Zeroconf.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -364,9 +360,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\OpenCvSharp4.runtime.win.4.9.0.20240103\build\net48\OpenCvSharp4.runtime.win.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\OpenCvSharp4.runtime.win.4.9.0.20240103\build\net48\OpenCvSharp4.runtime.win.props'))" />
-    <Error Condition="!Exists('packages\Tobii.Research.x64.1.11.0.1334\build\netstandard2.0\Tobii.Research.x64.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Tobii.Research.x64.1.11.0.1334\build\netstandard2.0\Tobii.Research.x64.targets'))" />
-    <Error Condition="!Exists('packages\Tobii.Research.x86.1.8.0.1108\build\Tobii.Research.x86.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Tobii.Research.x86.1.8.0.1108\build\Tobii.Research.x86.targets'))" />
+    <Error Condition="!Exists('packages\FFmpeg.Shared.4.0.2\build\FFmpeg.Shared.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\FFmpeg.Shared.4.0.2\build\FFmpeg.Shared.targets'))" />
   </Target>
-  <Import Project="packages\Tobii.Research.x64.1.11.0.1334\build\netstandard2.0\Tobii.Research.x64.targets" Condition="Exists('packages\Tobii.Research.x64.1.11.0.1334\build\netstandard2.0\Tobii.Research.x64.targets')" />
-  <Import Project="packages\Tobii.Research.x86.1.8.0.1108\build\Tobii.Research.x86.targets" Condition="Exists('packages\Tobii.Research.x86.1.8.0.1108\build\Tobii.Research.x86.targets')" />
+  <Import Project="packages\FFmpeg.Shared.4.0.2\build\FFmpeg.Shared.targets" Condition="Exists('packages\FFmpeg.Shared.4.0.2\build\FFmpeg.Shared.targets')" />
 </Project>

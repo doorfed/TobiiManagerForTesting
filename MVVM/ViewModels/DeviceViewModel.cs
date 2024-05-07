@@ -14,7 +14,6 @@ using OxyPlot;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Timer = System.Timers.Timer;
 using TobiiGlassesManager.Core;
-using TobiiGlassesManager.MVVM.Views;
 using TobiiGlassesManager.Core.VideoStreaming;
 
 namespace TobiiGlassesManager.MVVM.ViewModels
@@ -27,7 +26,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             get { return _hostName; }
         }
         private readonly IG3Api _g3;
-        private readonly Timer _calibMarkerTimer;
         private readonly Timer _externalTimeReferenceTimer;
 
         private string _gyr;

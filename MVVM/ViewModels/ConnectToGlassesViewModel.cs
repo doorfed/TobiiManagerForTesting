@@ -1,5 +1,4 @@
 ﻿using G3SDK;
-using Tobii.Research;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Threading;

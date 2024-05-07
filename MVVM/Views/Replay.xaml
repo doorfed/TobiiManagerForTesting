@@ -3,14 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             d:DataContext="{d:DesignInstance Type=viewmodels:RecordingViewModel, IsDesignTimeCreatable=false}"
+             d:DataContext="{d:DesignInstance Type=viewModel:RecordingViewModel, IsDesignTimeCreatable=false}"
              xmlns:local="clr-namespace:TobiiGlassesManager.MVVM.Views"
-             xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win" 
-             xmlns:viewmodels="clr-namespace:TobiiGlassesManager.MVVM.ViewModels"
+             xmlns:viewModel="clr-namespace:TobiiGlassesManager.MVVM.ViewModels"
+             xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
              mc:Ignorable="d" 
-             DataContextChanged="Replay_OnDataContextChanged" 
-             d:DesignWidth="800" 
-             Height="775">
+             DataContextChanged="Replay_OnDataContextChanged"
+             d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -21,7 +20,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Width="480" Height="270">
-            <ffme:MediaElement  x:Name="Media"  Background="Gray" LoadedBehavior="Manual" UnloadedBehavior="Manual" />
+            <MediaElement  x:Name="Media" Source="{Binding VideoUri}" LoadedBehavior="Manual" UnloadedBehavior="Manual" />
             <Canvas>
                 <Ellipse Width="{Binding GazeMarkerSize}" Height="{Binding GazeMarkerSize}" Stroke="Red" StrokeThickness="2">
                     <Ellipse.RenderTransform>
@@ -53,11 +52,7 @@
             </StackPanel>
             <ProgressBar Value="{Binding DownloadProgress}" Maximum="1" Minimum="0"></ProgressBar>
         </StackPanel>
-        <ffme:MediaElement Grid.Row="4"  
-                           x:Name="RtaVideo"  
-                           Background="Gray" 
-                           LoadedBehavior="Manual" 
-                           UnloadedBehavior="Manual" />
+        <ffme:MediaElement Grid.Row="4"  x:Name="RtaVideo"  Background="Gray" LoadedBehavior="Manual" UnloadedBehavior="Manual" />
         <ItemsControl Grid.Row="5" ItemsSource="{Binding Snapshots}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
