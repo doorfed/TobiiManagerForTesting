@@ -12,8 +12,10 @@ namespace TobiiGlassesManager.MVVM.Views
         {
             InitializeComponent();
 
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(0.1);
+            DispatcherTimer timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(0.1)
+            };
             timer.Tick += timer_Tick;
             timer.Start();
         }
