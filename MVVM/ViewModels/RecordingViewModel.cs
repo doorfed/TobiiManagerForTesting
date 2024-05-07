@@ -144,20 +144,28 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             }
         }
 
+        public Task UpdateMediaPlayerData()
+        {
+            InternalSetPosition(_media.Position);
+            RenderGazeData(_media.Position);
+            if (_rtaRec != null)
+                UpdateRTAVideo(_media.Position);
+
+            return Task.CompletedTask;
+        }
+
         public async Task AttachMediaPlayer(System.Windows.Controls.MediaElement media, Unosquare.FFME.MediaElement rtaMedia)
         {
             _media = media;
 
-            /**
-            _media.RenderingVideo += (sender, args) =>
+            _media.BufferingStarted += (sender, args) =>
             {
-                InternalSetPosition(args.StartTime);
-                RenderGazeData(args.StartTime);
+                InternalSetPosition(_media.Position);
+                RenderGazeData(_media.Position);
                 if (_rtaRec != null)
-                    UpdateRTAVideo(args.StartTime);
+                    UpdateRTAVideo(_media.Position);
             };
-            await _media.Open(VideoUri);
-            **/
+
             await PrepareReplay();
 
             if (_rtaRec != null)
