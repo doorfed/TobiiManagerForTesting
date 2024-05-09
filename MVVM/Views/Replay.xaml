@@ -7,6 +7,7 @@
              xmlns:local="clr-namespace:TobiiGlassesManager.MVVM.Views"
              xmlns:viewModel="clr-namespace:TobiiGlassesManager.MVVM.ViewModels"
              xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
+             xmlns:d3="clr-namespace:InteractiveDataDisplay.WPF;assembly=InteractiveDataDisplay.WPF"
              mc:Ignorable="d" 
              DataContextChanged="Replay_OnDataContextChanged"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -19,8 +20,10 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
+        
         <Grid Width="480" Height="270">
             <MediaElement  x:Name="Media" Source="{Binding VideoUri}" LoadedBehavior="Manual" UnloadedBehavior="Manual" />
+
             <Canvas>
                 <Ellipse Width="{Binding GazeMarkerSize}" Height="{Binding GazeMarkerSize}" Stroke="Red" StrokeThickness="2">
                     <Ellipse.RenderTransform>
@@ -31,6 +34,8 @@
                     </Ellipse.RenderTransform>
                 </Ellipse>
             </Canvas>
+
+            <Canvas x:Name="CanvasMap" />
         </Grid>
         <TextBlock Grid.Row="1" HorizontalAlignment="Center" Text="{Binding Position, StringFormat=hh\\:mm\\:ss\\.fff}"></TextBlock>
         <ProgressBar Grid.Row="2" Height="7" Margin="5,0" VerticalAlignment="Center"
@@ -46,9 +51,8 @@
         <StackPanel Grid.Row="3">
             <StackPanel  Orientation="Horizontal">
                 <Button Command="{Binding TogglePlay}">Play/Pause</Button>
-                <Button Command="{Binding StartRTA}">StartRTA</Button>
-                <Button Command="{Binding StopRTA}">StopRTA</Button>
                 <Button Command="{Binding Download}">Download</Button>
+                <Button x:Name="HeatmapButton" Content="Heatmap" />
             </StackPanel>
             <ProgressBar Value="{Binding DownloadProgress}" Maximum="1" Minimum="0"></ProgressBar>
         </StackPanel>

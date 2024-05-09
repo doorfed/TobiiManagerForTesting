@@ -49,7 +49,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         private bool _isCalibrated;
         private double _lastExternalTimeRoundtrip;
         private int _externalTimeReferenceIndex;
-        private readonly CalibratedMagnetometer _calibMag;
         private readonly RtspPlayerVM _rtspPlayerVM;
         private string _gazeBuffer;
 
@@ -159,18 +158,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             {
                 Msg = $"-- {e.Item1}";
             };
-            _calibMag = new CalibratedMagnetometer(_g3);
-            _calibMag.Start();
-            _calibMag.Subscribe(data =>
-            {
-                if (MagPlotEnabled && data.Magnetometer.IsValid())
-                {
-                    AddPoint(CalibMagXSeries, data.TimeStamp, data.Magnetometer.X);
-                    AddPoint(CalibMagYSeries, data.TimeStamp, data.Magnetometer.Y);
-                    AddPoint(CalibMagZSeries, data.TimeStamp, data.Magnetometer.Z);
-                }
-            }
-            );
             _qrTimer.Tick += (sender, args) => QrDetect();
         }
 

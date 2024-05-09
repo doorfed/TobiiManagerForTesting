@@ -63,8 +63,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
 
             DeleteRecording = new RelayCommand(async o => await DoDeleteRecording());
             Download = new RelayCommand(async o => await DoDownload());
-            StartRTA = new RelayCommand(async o => await DoStartRTA());
-            StopRTA = new RelayCommand(async o => await DoStopRTA());
 
             _g3.Recorder.Started.SubscribeAsync(g => DeviceIsRecording = true);
             _g3.Recorder.Stopped.SubscribeAsync(g => DeviceIsRecording = false);
@@ -87,25 +85,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         private Task DoDeleteRecording()
         {
             return _g3.Recordings.Delete(_recording.UUID);
-        }
-
-        private async Task DoStopRTA()
-        {
-            RtaInProgress = false;
-            await _g3.Recorder.Stop();
-        }
-
-        private async Task DoStartRTA()
-        {
-            await _g3.Recorder.Start();
-            var metaInfo = new RtaMetaInfo(_recording.UUID, await _g3.Recorder.UUID, DateTime.UtcNow);
-            await _g3.Recorder.MetaInsert("RTA", JsonConvert.SerializeObject(metaInfo));
-            RtaInProgress = true;
-            _rtaTimer = new Timer();
-            _rtaTimer.Interval = 5000;
-            _rtaTimer.Enabled = true;
-            _rtaTimer.Elapsed += async (sender, args) => { await SendRtaInfo(); };
-            await SendRtaInfo();
         }
 
         private async Task SendRtaInfo()
@@ -148,8 +127,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         {
             InternalSetPosition(_media.Position);
             RenderGazeData(_media.Position);
-            if (_rtaRec != null)
-                UpdateRTAVideo(_media.Position);
 
             return Task.CompletedTask;
         }
@@ -228,6 +205,12 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             }
             GazeX = int.MinValue;
             GazeY = int.MinValue;
+        }
+
+        private void RenderHeatMapData()
+        {
+            // SHOULD TAKE IN THE CURRENT GAZE DATA AND UPDATE ITSELF
+
         }
 
         private void InternalSetPosition(TimeSpan t)
