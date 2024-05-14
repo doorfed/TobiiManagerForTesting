@@ -5,8 +5,8 @@ namespace TobiiGlassesManager.Core.VideoStreaming
 {
     internal class TimedLine
     {
-        public Line Line { get; set; }
-        public double TimeOfCreation { get; set; }
+        public Line Line { get; private set; }
+        public double TimeOfCreation { get; private set; }
 
         public TimedLine(Line drawnLine, double drawnTimeInSeconds) { 
             Line = drawnLine;
