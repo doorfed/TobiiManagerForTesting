@@ -207,12 +207,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             GazeY = int.MinValue;
         }
 
-        private void RenderHeatMapData()
-        {
-            // SHOULD TAKE IN THE CURRENT GAZE DATA AND UPDATE ITSELF
-
-        }
-
         private void InternalSetPosition(TimeSpan t)
         {
             _position = t;

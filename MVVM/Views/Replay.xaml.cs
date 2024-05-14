@@ -11,8 +11,8 @@ namespace TobiiGlassesManager.MVVM.Views
 {
     public partial class Replay : UserControl
     {
-        double lastX = int.MinValue;
-        double lastY = int.MinValue;
+        double lastX = -1;
+        double lastY = -1;
 
         List<TimedLine> TimedLines = new List<TimedLine>();
 
@@ -51,14 +51,14 @@ namespace TobiiGlassesManager.MVVM.Views
         
         void DrawGazeLine(double xData, double yData, double drawnInSeconds)
         {
-            if (lastX != int.MinValue && lastY != int.MinValue)
+            if (lastX >= 0 && lastY >= 0)
             {
                 Line line = new Line()
                 {
                     X1 = lastX,
                     Y1 = lastY,
-                    X2 = xData,
-                    Y2 = yData,
+                    X2 = xData.Equals(int.MinValue) ? lastX : xData,
+                    Y2 = yData.Equals(int.MinValue) ? lastY : yData,
                     Stroke = System.Windows.Media.Brushes.Red,
                     StrokeThickness = 2,
                     Visibility = Visibility.Visible,

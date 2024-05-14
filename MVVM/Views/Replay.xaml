@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
         
         <Grid Width="480" Height="270">
-            <MediaElement  x:Name="Media" Source="{Binding VideoUri}" LoadedBehavior="Manual" UnloadedBehavior="Manual" />
+            <MediaElement x:Name="Media" Source="{Binding VideoUri}" LoadedBehavior="Manual" UnloadedBehavior="Manual" />
 
             <Canvas>
                 <Ellipse Width="{Binding GazeMarkerSize}" Height="{Binding GazeMarkerSize}" Stroke="Red" StrokeThickness="2">
@@ -36,6 +36,7 @@
 
             <Canvas x:Name="CanvasMap" />
         </Grid>
+        
         <TextBlock Grid.Row="1" HorizontalAlignment="Center" Text="{Binding Position, StringFormat=hh\\:mm\\:ss\\.fff}"></TextBlock>
         <ProgressBar Grid.Row="2" Height="7" Margin="5,0" VerticalAlignment="Center"
                      Maximum="{Binding DurationInSeconds}" 
