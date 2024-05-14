@@ -231,10 +231,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Core\VideoStreaming\RtspPlayer.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -251,10 +247,6 @@
     <Compile Include="Core\ObservableObject.cs" />
     <Compile Include="Core\RelayCommand.cs" />
     <Compile Include="Core\VideoStreaming\CoordVm.cs" />
-    <Compile Include="Core\VideoStreaming\RtspPlayer.xaml.cs">
-      <DependentUpon>RtspPlayer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Core\VideoStreaming\RtspPlayerVM.cs" />
     <Compile Include="Core\VideoStreaming\VideoStream.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
