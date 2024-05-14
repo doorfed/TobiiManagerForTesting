@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using TobiiGlassesManager.Core.VideoStreaming;
 using TobiiGlassesManager.MVVM.ViewModels;
 
 namespace TobiiGlassesManager.MVVM.Views
@@ -11,6 +13,8 @@ namespace TobiiGlassesManager.MVVM.Views
     {
         double lastX = int.MinValue;
         double lastY = int.MinValue;
+
+        List<TimedLine> TimedLines = new List<TimedLine>();
 
         public Replay()
         {
@@ -29,11 +33,23 @@ namespace TobiiGlassesManager.MVVM.Views
             if (DataContext is RecordingViewModel _vm)
             {
                 _vm.UpdateMediaPlayerData();
-                DrawGazeLine(_vm.GazeX, _vm.GazeY);
+                DrawGazeLine(_vm.GazeX, _vm.GazeY, _vm.PositionInSeconds);
+
+                int deleteCounter = 0;
+
+                foreach (var line in TimedLines)
+                {
+                    if (_vm.PositionInSeconds < line.TimeOfCreation){
+                        deleteCounter++;
+                    }
+                }
+
+                TimedLines.RemoveRange(TimedLines.Count - deleteCounter, deleteCounter);
+                CanvasMap.Children.RemoveRange(TimedLines.Count, deleteCounter);
             }
         }
         
-        void DrawGazeLine(double xData, double yData)
+        void DrawGazeLine(double xData, double yData, double drawnInSeconds)
         {
             if (lastX != int.MinValue && lastY != int.MinValue)
             {
@@ -48,7 +64,9 @@ namespace TobiiGlassesManager.MVVM.Views
                     Visibility = Visibility.Visible,
                 };
 
-                CanvasMap.Children.Add(line);
+                TimedLines.Add(new TimedLine(line, drawnInSeconds));
+
+                CanvasMap.Children.Add(TimedLines[TimedLines.Count - 1].Line);
             }
 
             lastX = xData;
@@ -59,6 +77,18 @@ namespace TobiiGlassesManager.MVVM.Views
         {
             if (DataContext is RecordingViewModel _vm)
                 await _vm.AttachMediaPlayer(Media, RtaVideo);
+        }
+
+        private void LinesButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CanvasMap.Visibility == Visibility.Visible)
+            {
+                CanvasMap.Visibility = Visibility.Hidden;
+            } 
+            else
+            {
+                CanvasMap.Visibility = Visibility.Visible;
+            }
         }
     }
 }

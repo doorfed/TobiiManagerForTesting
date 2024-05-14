@@ -7,7 +7,6 @@
              xmlns:local="clr-namespace:TobiiGlassesManager.MVVM.Views"
              xmlns:viewModel="clr-namespace:TobiiGlassesManager.MVVM.ViewModels"
              xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
-             xmlns:d3="clr-namespace:InteractiveDataDisplay.WPF;assembly=InteractiveDataDisplay.WPF"
              mc:Ignorable="d" 
              DataContextChanged="Replay_OnDataContextChanged"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -52,7 +51,7 @@
             <StackPanel  Orientation="Horizontal">
                 <Button Command="{Binding TogglePlay}">Play/Pause</Button>
                 <Button Command="{Binding Download}">Download</Button>
-                <Button x:Name="HeatmapButton" Content="Heatmap" />
+                <Button x:Name="LinesButton" Content="Show/Hide Line" HorizontalAlignment="Right" Click="LinesButton_Click"/>
             </StackPanel>
             <ProgressBar Value="{Binding DownloadProgress}" Maximum="1" Minimum="0"></ProgressBar>
         </StackPanel>

@@ -246,6 +246,7 @@
     <Compile Include="Core\ExternalTimeReference.cs" />
     <Compile Include="Core\ThrottlingObservableCollection.cs" />
     <Compile Include="Core\Utils.cs" />
+    <Compile Include="Core\VideoStreaming\TimedLine.cs" />
     <Compile Include="Core\WifiSettings.cs" />
     <Compile Include="Core\ObservableObject.cs" />
     <Compile Include="Core\RelayCommand.cs" />
