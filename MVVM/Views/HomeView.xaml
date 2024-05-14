@@ -13,5 +13,12 @@
                    FontSize="30"
                    HorizontalAlignment="Left"
                    Margin="0, 0, 0, 20"/>
+        
+        <TextBlock Text="Please choose a Tobii Glasses 3 device to connect to in the 'Connect' menu and start watching the recordings in the 'Recordings' menu"
+                   TextWrapping="Wrap"
+                   Foreground="White"
+                   FontSize="20"
+                   HorizontalAlignment="Left"
+                   Margin="0, 0, 0, 20"/>
     </StackPanel>
 </UserControl>

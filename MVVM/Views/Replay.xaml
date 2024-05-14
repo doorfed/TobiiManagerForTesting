@@ -24,7 +24,7 @@
             <MediaElement x:Name="Media" Source="{Binding VideoUri}" LoadedBehavior="Manual" UnloadedBehavior="Manual" />
 
             <Canvas>
-                <Ellipse Width="{Binding GazeMarkerSize}" Height="{Binding GazeMarkerSize}" Stroke="Red" StrokeThickness="2">
+                <Ellipse Width="{Binding GazeMarkerSize}" Height="{Binding GazeMarkerSize}" Stroke="LightGreen" StrokeThickness="2">
                     <Ellipse.RenderTransform>
                         <TransformGroup>
                             <TranslateTransform X="{Binding GazeX}" />

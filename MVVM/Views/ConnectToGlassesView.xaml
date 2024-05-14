@@ -24,17 +24,13 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"/>
         </Grid>
-
-        <ListView ItemsSource="{Binding Devices}">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Tracker Name" DisplayMemberBinding="{Binding HostName}" />
-                </GridView>
-            </ListView.View>
-        </ListView>
-
-        <Label Grid.Row="0" HorizontalAlignment="Left" Content="Choose a tracker from the available ones: " />
-        <ListBox Grid.Row="0" HorizontalAlignment="Left" Margin="10, 0, 0, 0" ItemsSource="{Binding Devices}" SelectedItem="{Binding CurrentDevice}" />
+        
+        <ListBox Grid.Row="0" 
+                 HorizontalAlignment="Left" 
+                 Margin="10, 0, 0, 0" 
+                 ItemsSource="{Binding Devices}"
+                 SelectionMode="Single"
+                 SelectedItem="{Binding CurrentDevice}" />
 
     </StackPanel>
 </UserControl>
