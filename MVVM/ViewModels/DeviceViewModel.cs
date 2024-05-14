@@ -1,20 +1,13 @@
 ﻿using G3SDK;
 using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.Windows.Threading;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using OpenCvSharp;
 using OxyPlot;
-using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Timer = System.Timers.Timer;
 using TobiiGlassesManager.Core;
-using TobiiGlassesManager.Core.VideoStreaming;
 
 namespace TobiiGlassesManager.MVVM.ViewModels
 {
@@ -34,7 +27,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         private string _gaze;
         private string _mag;
         private string _acc;
-        private bool _isRecording;
         private SpaceState _spaceState = SpaceState.Unknown;
 
         private int[] _frequencies = { };
@@ -43,26 +35,15 @@ namespace TobiiGlassesManager.MVVM.ViewModels
 
         private string _sync;
         private string _event;
-        private bool _showCalibMarkers;
 
         private bool _selected;
-        private bool _isCalibrated;
         private double _lastExternalTimeRoundtrip;
         private int _externalTimeReferenceIndex;
-        private readonly RtspPlayerVM _rtspPlayerVM;
-        private string _gazeBuffer;
 
         public DeviceViewModel(Dispatcher dispatcher, string hostName, IG3Api g3) : base(dispatcher)
         {
             _hostName = hostName;
             _g3 = g3;
-            _rtspPlayerVM = new RtspPlayerVM(g3);
-            _rtspPlayerVM.OnMediaAssigned += async (sender, args) =>
-            {
-                await _rtspPlayerVM.Connect(VideoStream.Scene);
-            };
-
-            ScanQRCode = new RelayCommand(o => DoScanQRCode(o));
 
             _externalTimeReferenceTimer = new Timer(5000);
             _externalTimeReferenceTimer.Elapsed += async (sender, args) =>
@@ -75,117 +56,8 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             _externalTimeReferenceTimer.Enabled = true;
 
             _g3.Settings.Changed.SubscribeAsync(OnSettingsChanged);
-            _g3.Recorder.Started.SubscribeAsync(g => IsRecording = true);
-            _g3.Recorder.Stopped.SubscribeAsync(g => IsRecording = false);
             _g3.System.Storage.StateChanged.SubscribeAsync(OnCardStateChanged);
             GazePlotEnabled = false;
-
-            _rtspPlayerVM.OnGaze += (sender, data) =>
-            {
-                Gaze = $"Gaze: {data.Gaze2D.X:F3};{data.Gaze2D.Y:F3}";
-                GazeBuffer = $"GazeBuffer: {_rtspPlayerVM.GazeQueueSize} samples";
-
-                Dispatcher.Invoke(() =>
-                {
-                    if (GazePlotEnabled)
-                    {
-                        AddPoint(GazeXSeries, data.TimeStamp, data.Gaze2D.X);
-                        AddPoint(GazeYSeries, data.TimeStamp, data.Gaze2D.Y);
-                    }
-
-                    if (PupilPlotEnabled)
-                    {
-                        AddPoint(PupilLeftSeries, data.TimeStamp, data.LeftEye?.PupilDiameter ?? float.NaN);
-                        AddPoint(PupilRightSeries, data.TimeStamp, data.RightEye?.PupilDiameter ?? float.NaN);
-                    }
-                });
-            };
-
-            _rtspPlayerVM.OnVideoFrame += (sender, args) =>
-            {
-                if (_grabNextImage)
-                {
-                    _grabNextImage = false;
-                    _grabbedImage = (Bitmap)args.Bitmap.CreateDrawingBitmap().Clone();
-                }
-            };
-
-            _rtspPlayerVM.RtspDataDemuxer.OnSyncPort += (sender, data) =>
-            {
-                Sync = $"Sync: {data.Direction}={data.Value}";
-            };
-
-            _rtspPlayerVM.RtspDataDemuxer.OnImu += (sender, data) =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    if (AccPlotEnabled && data.Accelerometer.IsValid())
-                    {
-                        AddPoint(AccXSeries, data.TimeStamp, data.Accelerometer.X);
-                        AddPoint(AccYSeries, data.TimeStamp, data.Accelerometer.Y);
-                        AddPoint(AccZSeries, data.TimeStamp, data.Accelerometer.Z);
-                    }
-
-                    if (GyrPlotEnabled && data.Gyroscope.IsValid())
-                    {
-                        AddPoint(GyrXSeries, data.TimeStamp, data.Gyroscope.X);
-                        AddPoint(GyrYSeries, data.TimeStamp, data.Gyroscope.Y);
-                        AddPoint(GyrZSeries, data.TimeStamp, data.Gyroscope.Z);
-                    }
-
-                    if (MagPlotEnabled && data.Magnetometer.IsValid())
-                    {
-                        AddPoint(MagXSeries, data.TimeStamp, data.Magnetometer.X);
-                        AddPoint(MagYSeries, data.TimeStamp, data.Magnetometer.Y);
-                        AddPoint(MagZSeries, data.TimeStamp, data.Magnetometer.Z);
-                    }
-                });
-
-                if (data.Magnetometer.IsValid()) Mag = $"Mag: {FormatV3(data.Magnetometer)}";
-                if (data.Gyroscope.IsValid()) Gyr = $"Gyr: {FormatV3(data.Gyroscope)}";
-            };
-            _rtspPlayerVM.RtspDataDemuxer.OnEvent += (sender, e) =>
-            {
-                Event = $"Event: {e.Tag}, {e.Obj}";
-            };
-
-            _rtspPlayerVM.RtspDataDemuxer.OnUnknownEvent += (sender, e) =>
-            {
-                Msg = $"** {e.Item1}";
-            };
-
-            _rtspPlayerVM.RtspDataDemuxer.OnUnknownEvent2 += (sender, e) =>
-            {
-                Msg = $"-- {e.Item1}";
-            };
-            _qrTimer.Tick += (sender, args) => QrDetect();
-        }
-
-
-        public string GazeBuffer
-        {
-            get => _gazeBuffer;
-            set
-            {
-                if (value == _gazeBuffer) return;
-                _gazeBuffer = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public RtspPlayerVM RtspPlayerVm => _rtspPlayerVM;
-
-        private void AddPoint(ThrottlingObservableCollection<DataPoint> data, TimeSpan time, float value)
-        {
-            data.Add(new DataPoint(time.TotalSeconds, value));
-
-            while (data.Last().X - data.First().X > 3)
-                data.RemoveFirst();
-        }
-
-        private Task DoTakeSnapshot()
-        {
-            return _g3.Recorder.Snapshot();
         }
 
         #region ViewModel properties
@@ -238,21 +110,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             }
         }
 
-        public bool IsRecording
-        {
-            get => _isRecording;
-            set
-            {
-                if (_isRecording == value)
-                    return;
-                _isRecording = value;
-                RaiseCanExecuteChange(StartRecording);
-                RaiseCanExecuteChange(StopRecording);
-                RaiseCanExecuteChange(TakeSnapshot);
-                OnPropertyChanged();
-            }
-        }
-
         public CardState CardState
         {
             get => _cardState;
@@ -263,16 +120,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
                 OnPropertyChanged();
                 RaiseCanExecuteChange(StartRecording);
 
-            }
-        }
-
-        public bool ShowCalibMarkers
-        {
-            get => _showCalibMarkers;
-            set
-            {
-                _showCalibMarkers = value;
-                OnPropertyChanged();
             }
         }
 
@@ -375,17 +222,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         public RelayCommand ScanQRCode { get; }
         public RelayCommand ToggleZoom { get; }
 
-        public bool IsCalibrated
-        {
-            get => _isCalibrated;
-            set
-            {
-                if (value == _isCalibrated) return;
-                _isCalibrated = value;
-                OnPropertyChanged();
-            }
-        }
-
         public ThrottlingObservableCollection<DataPoint> GazeXSeries { get; } = new ThrottlingObservableCollection<DataPoint>();
         public ThrottlingObservableCollection<DataPoint> GazeYSeries { get; } = new ThrottlingObservableCollection<DataPoint>();
         public ThrottlingObservableCollection<DataPoint> AccXSeries { get; } = new ThrottlingObservableCollection<DataPoint>();
@@ -415,11 +251,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
 
         #endregion
 
-        private string FormatV3(Vector3 v)
-        {
-            return v.IsValid() ? $"{v.X:F3};{v.Y:F3};{v.Z:F3}" : "---";
-        }
-
         public async Task InitAsync()
         {
             Serial = await _g3.System.RecordingUnitSerial;
@@ -428,7 +259,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             GazeOverlay = await _g3.Settings.GazeOverlay;
             Frequencies = await _g3.System.AvailableGazeFrequencies();
             Frequency = await _g3.Settings.GazeFrequency;
-            IsRecording = (await _g3.Recorder.Duration).HasValue;
         }
 
         private void OnCardStateChanged((SpaceState spaceState, CardState cardState) state)
@@ -441,26 +271,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         {
             if (s == "gaze-overlay")
                 GazeOverlay = await _g3.Settings.GazeOverlay;
-        }
-
-
-        public async Task<(bool, Guid)> DoStartRecording()
-        {
-            var res = await _g3.Recorder.Start();
-            var guid = await _g3.Recorder.UUID;
-            return (res, guid);
-        }
-
-        public async Task<bool> DoStopRecording()
-        {
-            return await _g3.Recorder.Stop();
-        }
-
-        public async Task<bool> Calibrate()
-        {
-            var res = await _g3.Calibrate.Run();
-            IsCalibrated = res;
-            return res;
         }
 
         public RecordingsViewModel CreateRecordingsVM()
@@ -510,104 +320,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             }
 
             return "Unable to find config or network with ssid " + wifi.Ssid;
-        }
-
-        private Bitmap _grabbedImage;
-        private bool _grabNextImage;
-        private readonly QRCodeDetector _qrCodeDetector = new QRCodeDetector();
-        private readonly System.Windows.Forms.Timer _qrTimer = new System.Windows.Forms.Timer { Interval = 1000 };
-        private string _qrData;
-        private bool _zoomEnabled = false;
-        private float _zoomy = 0.5f;
-        private float _zoomx = 0.5f;
-
-        private async void QrDetect()
-        {
-            _qrTimer.Enabled = false;
-            _grabNextImage = true;
-            while (_grabbedImage == null)
-                await Task.Delay(20);
-
-            var sw2 = Stopwatch.StartNew();
-            var s = Convert(_grabbedImage);
-            var img = OpenCvSharp.WpfExtensions.BitmapSourceConverter.ToMat(s);
-            _grabbedImage.Dispose();
-            _grabbedImage = null;
-            var smallImage = new Mat();
-            Cv2.Resize(img, smallImage, new OpenCvSharp.Size(img.Width / 2, img.Height / 2));
-
-            var x = sw2.ElapsedMilliseconds;
-            var data = _qrCodeDetector.DetectAndDecode(smallImage, out var points);
-
-            sw2.Stop();
-            QrData = $"{data} ({x} / {sw2.ElapsedMilliseconds - x}ms)";
-            if (!string.IsNullOrEmpty(data) && data.StartsWith("WIFI"))
-            {
-                var res = await ConfigureWifiFromQR(data);
-                QrData = QrData + " " + res;
-            }
-            else
-            {
-                _qrTimer.Enabled = true;
-            }
-            smallImage.Release();
-            img.Release();
-        }
-
-        public static BitmapSource Convert(Bitmap bitmap)
-        {
-            var bitmapData = bitmap.LockBits(
-                new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                System.Drawing.Imaging.ImageLockMode.ReadOnly, bitmap.PixelFormat);
-
-            var pixelFormats = PixelFormats.Bgr24;
-            switch (bitmap.PixelFormat)
-            {
-                case PixelFormat.Format32bppArgb:
-                    pixelFormats = PixelFormats.Bgra32;
-                    break;
-                case PixelFormat.Format32bppRgb:
-                    pixelFormats = PixelFormats.Bgr32;
-                    break;
-            }
-            var bitmapSource = BitmapSource.Create(
-                bitmapData.Width, bitmapData.Height,
-                bitmap.HorizontalResolution, bitmap.VerticalResolution,
-                pixelFormats, null,
-                bitmapData.Scan0, bitmapData.Stride * bitmapData.Height, bitmapData.Stride);
-
-            bitmap.UnlockBits(bitmapData);
-
-            return bitmapSource;
-        }
-
-        public string QrData
-        {
-            get => _qrData;
-            set
-            {
-                if (value == _qrData) return;
-                _qrData = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private void DoScanQRCode(object obj)
-        {
-            _qrTimer.Enabled = true;
-        }
-        private async Task DoToggleZoom()
-        {
-            if (_zoomEnabled)
-            {
-                var res = await _g3.System.SceneCamera.ZoomOff();
-                _zoomEnabled = false;
-            }
-            else
-            {
-                var res = await _g3.System.SceneCamera.ZoomOn(_zoomx, _zoomy);
-                _zoomEnabled = true;
-            }
         }
     }
 }

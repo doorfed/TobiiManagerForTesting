@@ -44,7 +44,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         private bool _deviceIsRecording;
         private bool _rtaInProgress;
         private readonly IG3Api _g3;
-        private Timer _rtaTimer;
         private string _thumbnail = "images/image-not-found.png";
         private string _huSerial;
         private string _ruSerial;
@@ -509,7 +508,7 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         public Guid Rec { get; }
         public Guid RtaRec { get; }
 
-        public RtaMetaInfo(Guid rec, Guid rtaRec, DateTime dateTime)
+        public RtaMetaInfo(Guid rec, Guid rtaRec)
         {
             Rec = rec;
             RtaRec = rtaRec;
