@@ -13,16 +13,9 @@
     </UserControl.Resources>
     
     <StackPanel>
-        <TextBlock Text="{Binding Id}"></TextBlock>
-        <TextBlock Text="{Binding Serial}"></TextBlock>
-        <CheckBox IsChecked="{Binding Selected}"></CheckBox>
-        <Image Width="20" 
-               Height="20" 
-               Visibility="{Binding IsCalibrated, Converter={StaticResource BoolToVis}}" 
-               Source="Images/eye-scanning.png"/>
-        <Image Width="20" 
-               Height="20" 
-               Visibility="{Binding IsRecording, Converter={StaticResource BoolToVis}}" 
-               Source="images/screen-recorder.png"/>
+        <TextBlock Text="{Binding Id}"
+                   VerticalAlignment="Center"/>
+        <TextBlock Text="{Binding Serial}" 
+                   />
     </StackPanel>
 </UserControl>
