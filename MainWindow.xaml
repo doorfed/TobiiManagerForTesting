@@ -81,7 +81,7 @@
 
             </StackPanel>
 
-            <TextBlock Text="ver 1.0.2"
+            <TextBlock Text="ver 1.0.3"
                        Grid.Row="1"
                        Foreground="White"
                        VerticalAlignment="Bottom"/>
