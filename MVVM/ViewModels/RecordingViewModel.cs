@@ -48,9 +48,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
         private string _huSerial;
         private string _ruSerial;
         private string _fwVersion;
-        private Unosquare.FFME.MediaElement _rtaMedia;
-        private List<(TimeSpan, RtaInfo)> _rtaEvents;
-        private IRecording _rtaRec;
         private bool _isPlaying;
         private double _downloadProgress;
 
@@ -130,7 +127,7 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             return Task.CompletedTask;
         }
 
-        public async Task AttachMediaPlayer(System.Windows.Controls.MediaElement media, Unosquare.FFME.MediaElement rtaMedia)
+        public async Task AttachMediaPlayer(System.Windows.Controls.MediaElement media)
         {
             _media = media;
 
@@ -138,43 +135,9 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             {
                 InternalSetPosition(_media.Position);
                 RenderGazeData(_media.Position);
-                if (_rtaRec != null)
-                    UpdateRTAVideo(_media.Position);
             };
 
             await PrepareReplay();
-
-            if (_rtaRec != null)
-            {
-                _rtaMedia = rtaMedia;
-                await _rtaMedia.Open(await _rtaRec.GetUri("scenevideo.mp4"));
-                await _rtaMedia.Pause();
-            }
-        }
-
-        private void UpdateRTAVideo(TimeSpan argsStartTime)
-        {
-            var e = _rtaEvents.LastOrDefault(x => x.Item1 < argsStartTime);
-            if (e.Item2 == null)
-                e = _rtaEvents.FirstOrDefault();
-            if (e.Item2 == null)
-                return;
-            var offset = argsStartTime - e.Item1;
-            if (e.Item2.IsPlaying)
-            {
-                var expectedPos = e.Item2.Position + offset;
-                if (Math.Abs((_rtaMedia.Position - expectedPos).TotalSeconds) > 0.2)
-                    _rtaMedia.Position = expectedPos;
-                if (GetMediaState(_media).Equals(MediaState.Play) && !_rtaMedia.IsPlaying)
-                    _rtaMedia.Play();
-                if (!GetMediaState(_media).Equals(MediaState.Play))
-                    _rtaMedia.Pause();
-            }
-            else
-            {
-                _rtaMedia.Position = e.Item2.Position;
-                _rtaMedia.Pause();
-            }
         }
 
         private MediaState GetMediaState(System.Windows.Controls.MediaElement myMedia)
@@ -242,11 +205,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
             RuSerial = await _recording.MetaLookupString(MetaDataCapableHelpers.MetaDataKey_RuSerial);
             HuSerial = await _recording.MetaLookupString(MetaDataCapableHelpers.MetaDataKey_HuSerial);
             VideoUri = await _recording.GetUri("scenevideo.mp4");
-            var rtaInfoStr = await _recording.MetaLookupString("RTA");
-            if (!String.IsNullOrEmpty(rtaInfoStr))
-            {
-                await InitRTAReplay(rtaInfoStr);
-            }
             var json = await _recording.GetRecordingJson();
             var snapshotarr = (JArray)json.json["scenecamera"]["snapshots"];
             if (snapshotarr != null)
@@ -265,15 +223,6 @@ namespace TobiiGlassesManager.MVVM.ViewModels
                 if (Snapshots.Any())
                     Thumbnail = Snapshots.First().Url.AbsoluteUri;
             }
-        }
-
-        private async Task InitRTAReplay(string rtaInfoStr)
-        {
-            var rtaInfo = JsonConvert.DeserializeObject<RtaMetaInfo>(rtaInfoStr);
-            _rtaRec = (await _g3.Recordings.Children()).FirstOrDefault(r => r.UUID == rtaInfo.Rec);
-            var allEvents = await _recording.Events();
-            var rtaEvents = allEvents.Where(g => g.Tag == "RTA").ToList();
-            _rtaEvents = rtaEvents.Select(g => (g.TimeStamp, JsonConvert.DeserializeObject<RtaInfo>(g.Obj))).ToList();
         }
 
         public string FwVersion

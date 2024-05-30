@@ -76,7 +76,7 @@ namespace TobiiGlassesManager.MVVM.Views
         private async void Replay_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (DataContext is RecordingViewModel _vm)
-                await _vm.AttachMediaPlayer(Media, RtaVideo);
+                await _vm.AttachMediaPlayer(Media);
         }
 
         private void LinesButton_Click(object sender, RoutedEventArgs e)
